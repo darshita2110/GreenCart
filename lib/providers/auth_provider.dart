@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:green_cart/models/user.dart';
 import 'package:green_cart/services/auth_service.dart';
 
-final authServiceProvider = Provider((ref) => AuthService());
+final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(authServiceProvider).authStateChanges();
@@ -12,28 +12,34 @@ final currentUserProvider = FutureProvider<User?>((ref) {
   return ref.watch(authServiceProvider).getCurrentUser();
 });
 
-// Login State Notifier
-class LoginNotifier extends StateNotifier<AsyncValue<User>> {
+// ─── Login ────────────────────────────────────────────────────────────────────
+
+class LoginNotifier extends StateNotifier<AsyncValue<User?>> {
   final AuthService _authService;
 
   LoginNotifier(this._authService) : super(const AsyncValue.data(null));
 
-  Future<void> login({required String email, required String password}) async {
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => _authService.login(email: email, password: password),
+          () => _authService.login(email: email, password: password),
     );
   }
 
   void reset() => state = const AsyncValue.data(null);
 }
 
-final loginProvider = StateNotifierProvider.autoDispose<LoginNotifier, AsyncValue<User>>(
-  (ref) => LoginNotifier(ref.watch(authServiceProvider)),
+final loginProvider =
+StateNotifierProvider.autoDispose<LoginNotifier, AsyncValue<User?>>(
+      (ref) => LoginNotifier(ref.watch(authServiceProvider)),
 );
 
-// Signup State Notifier
-class SignupNotifier extends StateNotifier<AsyncValue<User>> {
+// ─── Signup ───────────────────────────────────────────────────────────────────
+
+class SignupNotifier extends StateNotifier<AsyncValue<User?>> {
   final AuthService _authService;
 
   SignupNotifier(this._authService) : super(const AsyncValue.data(null));
@@ -45,7 +51,7 @@ class SignupNotifier extends StateNotifier<AsyncValue<User>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => _authService.signup(
+          () => _authService.signup(
         email: email,
         password: password,
         displayName: displayName,
@@ -56,32 +62,37 @@ class SignupNotifier extends StateNotifier<AsyncValue<User>> {
   void reset() => state = const AsyncValue.data(null);
 }
 
-final signupProvider = StateNotifierProvider.autoDispose<SignupNotifier, AsyncValue<User>>(
-  (ref) => SignupNotifier(ref.watch(authServiceProvider)),
+final signupProvider =
+StateNotifierProvider.autoDispose<SignupNotifier, AsyncValue<User?>>(
+      (ref) => SignupNotifier(ref.watch(authServiceProvider)),
 );
 
-// Forgot Password State Notifier
+// ─── Forgot Password ──────────────────────────────────────────────────────────
+
 class ForgotPasswordNotifier extends StateNotifier<AsyncValue<void>> {
   final AuthService _authService;
 
-  ForgotPasswordNotifier(this._authService) : super(const AsyncValue.data(null));
+  ForgotPasswordNotifier(this._authService)
+      : super(const AsyncValue.data(null));
 
   Future<void> sendResetEmail({required String email}) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => _authService.forgotPassword(email: email),
+          () => _authService.forgotPassword(email: email),
     );
   }
 
   void reset() => state = const AsyncValue.data(null);
 }
 
-final forgotPasswordProvider =
-    StateNotifierProvider.autoDispose<ForgotPasswordNotifier, AsyncValue<void>>(
-  (ref) => ForgotPasswordNotifier(ref.watch(authServiceProvider)),
+final forgotPasswordProvider = StateNotifierProvider.autoDispose<
+    ForgotPasswordNotifier, AsyncValue<void>>(
+      (ref) => ForgotPasswordNotifier(ref.watch(authServiceProvider)),
 );
 
-// Logout
+// ─── Logout ───────────────────────────────────────────────────────────────────
+
+// ✅ FIXED: logoutProvider is a simple action, not a stream – use autoDispose correctly
 final logoutProvider = FutureProvider.autoDispose<void>((ref) async {
   return ref.watch(authServiceProvider).logout();
 });

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:green_cart/config/theme/app_colors.dart';
 import 'package:green_cart/config/theme/app_text_styles.dart';
-import 'package:green_cart/services/validators.dart';
+import 'package:green_cart/models/validators.dart';
 import 'package:green_cart/providers/auth_provider.dart';
 import 'package:green_cart/widgets/custom_text_field.dart';
 import 'package:green_cart/widgets/custom_button.dart';
@@ -15,7 +15,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
       _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState
+    extends ConsumerState<ForgotPasswordScreen> {
   late TextEditingController _emailController;
   late GlobalKey<FormState> _formKey;
   bool _emailSent = false;
@@ -34,30 +35,30 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   void _handleForgotPassword() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     ref.read(forgotPasswordProvider.notifier).sendResetEmail(
-          email: _emailController.text.trim(),
-        );
+      email: _emailController.text.trim(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
 
+    // ✅ FIXED: Use whenOrNull instead of non-existent whenData/whenError
     ref.listen(forgotPasswordProvider, (previous, next) {
-      next.whenData((_) {
-        setState(() => _emailSent = true);
-      }).whenError((error, stack) {
-        _showErrorSnackbar(error.toString());
-      });
+      next.whenOrNull(
+        data: (_) {
+          if (mounted) setState(() => _emailSent = true);
+        },
+        error: (error, stack) {
+          _showErrorSnackbar(_parseError(error.toString()));
+        },
+      );
     });
 
-    if (_emailSent) {
-      return _buildSuccessScreen(context);
-    }
+    if (_emailSent) return _buildSuccessScreen(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,7 +75,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: Form(
               key: _formKey,
               child: Column(
@@ -127,9 +129,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Back to Login',
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: AppColors.primaryGreen,
-                        ),
+                        style: AppTextStyles.labelMedium
+                            .copyWith(color: AppColors.primaryGreen),
                       ),
                     ),
                   ),
@@ -148,10 +149,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         elevation: 0,
         backgroundColor: AppColors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios,
+              color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Check Your Email', style: AppTextStyles.headingSmall),
+        title:
+        Text('Check Your Email', style: AppTextStyles.headingSmall),
         centerTitle: true,
       ),
       backgroundColor: AppColors.white,
@@ -160,7 +163,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 120,
@@ -183,16 +185,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'We\'ve sent a password reset link to ${_emailController.text}. Please check your email and click the link to reset your password.',
+                'We\'ve sent a password reset link to ${_emailController.text}. Please check your inbox and follow the instructions.',
                 style: AppTextStyles.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
               CustomButton(
                 label: 'Back to Login',
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/login');
-                },
+                onPressed: () =>
+                    Navigator.of(context).pushReplacementNamed('/login'),
               ),
               const SizedBox(height: 12),
               CustomButton(
@@ -210,7 +211,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     );
   }
 
+  String _parseError(String error) {
+    if (error.contains('user-not-found')) {
+      return 'No account found with this email address.';
+    } else if (error.contains('invalid-email')) {
+      return 'The email address is not valid.';
+    } else if (error.contains('network-request-failed')) {
+      return 'Network error. Please check your connection.';
+    }
+    return 'Failed to send reset email. Please try again.';
+  }
+
   void _showErrorSnackbar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
