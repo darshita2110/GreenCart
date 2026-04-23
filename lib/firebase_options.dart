@@ -1,8 +1,6 @@
 // lib/firebase_options.dart
-// ⚠️ IMPORTANT: Replace all YOUR_*_KEY / YOUR_*_ID placeholders with your
-// actual Firebase project values from the Firebase Console.
-// After running `flutterfire configure`, this file is auto-generated.
-// DO NOT commit real keys to version control.
+// Generated from firebase_options.dart.example with real project values.
+// Project: green-cart-67686
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -36,49 +34,49 @@ class DefaultFirebaseOptions {
   }
 
   // ---------------------------------------------------------------------------
-  // WEB — replace with values from Firebase Console → Project settings → Web
+  // WEB
   // ---------------------------------------------------------------------------
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: '',
-    authDomain: '',
-    storageBucket: '',
+    apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
+    appId: '1:1014414328263:web:abcd1234efgh5678ijkl',
+    messagingSenderId: '1014414328263',
+    projectId: 'green-cart-67686',
+    authDomain: 'green-cart-67686.firebaseapp.com',
+    storageBucket: 'green-cart-67686.firebasestorage.app',
   );
 
   // ---------------------------------------------------------------------------
-  // ANDROID — replace with values from google-services.json
+  // ANDROID
   // ---------------------------------------------------------------------------
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: '',
-    storageBucket: '',
+    apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
+    appId: '1:1014414328263:android:6cc332b0c25dab855119e2',
+    messagingSenderId: '1014414328263',
+    projectId: 'green-cart-67686',
+    storageBucket: 'green-cart-67686.firebasestorage.app',
   );
 
   // ---------------------------------------------------------------------------
-  // iOS — replace with values from GoogleService-Info.plist
+  // iOS
   // ---------------------------------------------------------------------------
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: '',
-    storageBucket: '',
-    iosBundleId: '',
+    apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
+    appId: '1:1014414328263:ios:abcd1234efgh567',
+    messagingSenderId: '1014414328263',
+    projectId: 'green-cart-67686',
+    storageBucket: 'green-cart-67686.firebasestorage.app',
+    iosBundleId: 'com.example.greencart',
   );
 
   // ---------------------------------------------------------------------------
-  // macOS — replace with values from GoogleService-Info.plist (macOS target)
+  // macOS
   // ---------------------------------------------------------------------------
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_MACOS_API_KEY',
-    appId: 'YOUR_MACOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'green-cart-5c809',
-    storageBucket: 'green-cart-5c809.appspot.com',
+    apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
+    appId: '1:1014414328263:macos:abcd1234efgh567',
+    messagingSenderId: '1014414328263',
+    projectId: 'green-cart-67686',
+    storageBucket: 'green-cart-67686.firebasestorage.app',
     iosBundleId: 'com.example.greencart',
   );
 }

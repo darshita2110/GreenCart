@@ -27,8 +27,20 @@ class AuthService {
         createdAt: DateTime.now(),
       );
 
-      await _firestore.collection('users').doc(user.uid).set(newUser.toFirebase());
+      // Try to save user profile to Firestore (non-blocking)
+      // If Firestore fails, the user is still created in Firebase Auth
+      try {
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .set(newUser.toFirebase());
+      } catch (_) {
+        // Firestore write failed — user is still authenticated, continue
+      }
+
       return newUser;
+    } on fb.FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Sign up failed');
     } catch (e) {
       throw Exception('Sign up failed: $e');
     }
@@ -45,9 +57,27 @@ class AuthService {
       );
 
       final user = userCred.user!;
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
-      return User.fromFirebase(userDoc.data() ?? {}, user.uid);
+      // Try to fetch user profile from Firestore
+      try {
+        final userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists && userDoc.data() != null) {
+          return User.fromFirebase(userDoc.data()!, user.uid);
+        }
+      } catch (_) {
+        // Firestore read failed — fall back to Firebase Auth data
+      }
+
+      // Fallback: build User from Firebase Auth data
+      return User(
+        id: user.uid,
+        email: user.email ?? email,
+        displayName: user.displayName ?? '',
+        createdAt: DateTime.now(),
+      );
+    } on fb.FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Login failed');
     } catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -65,23 +95,46 @@ class AuthService {
     final user = _auth.currentUser;
     if (user == null) return null;
 
+    // Try Firestore first, fallback to Firebase Auth data
     try {
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
-      return userDoc.exists ? User.fromFirebase(userDoc.data() ?? {}, user.uid) : null;
-    } catch (e) {
-      return null;
+      final userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists && userDoc.data() != null) {
+        return User.fromFirebase(userDoc.data()!, user.uid);
+      }
+    } catch (_) {
+      // Firestore unavailable — use Firebase Auth data
     }
+
+    return User(
+      id: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName ?? '',
+      createdAt: DateTime.now(),
+    );
   }
 
   Stream<User?> authStateChanges() {
     return _auth.authStateChanges().asyncMap((fbUser) async {
       if (fbUser == null) return null;
+
+      // Try Firestore first, fallback to Firebase Auth data
       try {
-        final userDoc = await _firestore.collection('users').doc(fbUser.uid).get();
-        return userDoc.exists ? User.fromFirebase(userDoc.data() ?? {}, fbUser.uid) : null;
-      } catch (e) {
-        return null;
+        final userDoc =
+            await _firestore.collection('users').doc(fbUser.uid).get();
+        if (userDoc.exists && userDoc.data() != null) {
+          return User.fromFirebase(userDoc.data()!, fbUser.uid);
+        }
+      } catch (_) {
+        // Firestore unavailable
       }
+
+      return User(
+        id: fbUser.uid,
+        email: fbUser.email ?? '',
+        displayName: fbUser.displayName ?? '',
+        createdAt: DateTime.now(),
+      );
     });
   }
 }

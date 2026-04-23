@@ -4,6 +4,7 @@ import 'package:green_cart/config/theme/app_colors.dart';
 import 'package:green_cart/config/theme/app_text_styles.dart';
 import 'package:green_cart/models/product.dart';
 import 'package:green_cart/providers/product_provider.dart';
+import 'package:green_cart/providers/cart_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -335,6 +336,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   void _addToCart(Product product) {
+    ref.read(cartProvider.notifier).addToCart(product, quantity: _quantity);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -343,6 +345,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         backgroundColor: AppColors.successGreen,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
+        action: SnackBarAction(
+          label: 'VIEW CART',
+          textColor: AppColors.white,
+          onPressed: () {
+            Navigator.of(context).pushNamed('/cart');
+          },
+        ),
       ),
     );
   }

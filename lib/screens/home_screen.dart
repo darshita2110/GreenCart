@@ -20,7 +20,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final currentUserAsync = ref.watch(currentUserProvider);
     final searchQuery = ref.watch(searchQueryProvider);
-    final selectedCategory = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -78,12 +77,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       centerTitle: false,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.logout, color: AppColors.textPrimary),
-          onPressed: _handleLogout,
-        ),
-      ],
     );
   }
 
@@ -248,45 +241,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             style: AppTextStyles.bodyMedium,
           ),
         ),
-      ),
-    );
-  }
-
-  void _handleLogout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Logout',
-          style: AppTextStyles.headingSmall,
-        ),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: AppTextStyles.labelMedium.copyWith(
-                color: AppColors.primaryGreen,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(authServiceProvider).logout();
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-            child: Text(
-              'Logout',
-              style: AppTextStyles.labelMedium.copyWith(
-                color: AppColors.errorRed,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

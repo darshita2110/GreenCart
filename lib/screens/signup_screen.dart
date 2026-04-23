@@ -62,6 +62,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
+    // Dismiss keyboard so loading state and errors are visible
+    FocusScope.of(context).unfocus();
+
     ref.read(signupProvider.notifier).signup(
       email: _emailController.text.trim(),
       password: _passwordController.text,

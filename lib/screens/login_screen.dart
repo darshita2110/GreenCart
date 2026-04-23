@@ -46,6 +46,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _handleLogin() {
     if (!_formKey.currentState!.validate()) return;
 
+    // Dismiss keyboard so loading state and errors are visible
+    FocusScope.of(context).unfocus();
+
     ref.read(loginProvider.notifier).login(
       email: _emailController.text.trim(),
       password: _passwordController.text,

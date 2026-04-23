@@ -40,24 +40,59 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _animationController.forward();
   }
 
+  bool _hasNavigated = false;
+
   void _navigateAfterSplash() {
+    // Primary: wait 3s then check auth state
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+      if (mounted && !_hasNavigated) {
         _checkAuthState();
+      }
+    });
+
+    // Fallback: if auth never resolves (no internet, Firebase timeout),
+    // navigate to onboarding after 6 seconds total
+    Future.delayed(const Duration(seconds: 6), () {
+      if (mounted && !_hasNavigated) {
+        _navigateTo('/onboarding');
       }
     });
   }
 
   void _checkAuthState() {
-    ref.read(authStateProvider).whenData((user) {
-      if (!mounted) return;
+    final authState = ref.read(authStateProvider);
+    authState.when(
+      data: (user) {
+        if (user != null) {
+          _navigateTo('/home');
+        } else {
+          _navigateTo('/onboarding');
+        }
+      },
+      loading: () {
+        // Auth still loading — listen for changes
+        ref.listenManual(authStateProvider, (previous, next) {
+          next.when(
+            data: (user) {
+              if (user != null) {
+                _navigateTo('/home');
+              } else {
+                _navigateTo('/onboarding');
+              }
+            },
+            loading: () {},
+            error: (_, __) => _navigateTo('/onboarding'),
+          );
+        });
+      },
+      error: (_, __) => _navigateTo('/onboarding'),
+    );
+  }
 
-      if (user != null) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      } else {
-        Navigator.of(context).pushReplacementNamed('/onboarding');
-      }
-    });
+  void _navigateTo(String route) {
+    if (!mounted || _hasNavigated) return;
+    _hasNavigated = true;
+    Navigator.of(context).pushReplacementNamed(route);
   }
 
   @override
