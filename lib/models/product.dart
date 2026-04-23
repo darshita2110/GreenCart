@@ -23,18 +23,33 @@ class Product {
     required this.stock,
   });
 
-  factory Product.fromFirebase(Map<String, dynamic> data, String id) {
+  factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: id,
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
-      category: data['category'] ?? '',
-      price: (data['price'] ?? 0).toDouble(),
-      rating: (data['rating'] ?? 0).toDouble(),
-      imageUrl: data['imageUrl'] ?? '',
-      isOrganic: data['isOrganic'] ?? false,
-      unit: data['unit'] ?? 'kg',
-      stock: data['stock'] ?? 0,
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      category: json['category'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      rating: (json['rating'] ?? 0).toDouble(),
+      imageUrl: json['imageUrl'] ?? '',
+      isOrganic: json['isOrganic'] ?? false,
+      unit: json['unit'] ?? 'kg',
+      stock: json['stock'] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'category': category,
+      'price': price,
+      'rating': rating,
+      'imageUrl': imageUrl,
+      'isOrganic': isOrganic,
+      'unit': unit,
+      'stock': stock,
+    };
   }
 }

@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:green_cart/models/product.dart';
 
 class ProductService {
-  final _firestore = FirebaseFirestore.instance;
-
   Future<List<Product>> getAllProducts() async {
     try {
-      final snapshot = await _firestore.collection('products').get();
-      return snapshot.docs
-          .map((doc) => Product.fromFirebase(doc.data(), doc.id))
-          .toList();
+      final String jsonString = await rootBundle.loadString('assets/data/products.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      final List<dynamic> productsJson = jsonData['products'];
+
+      return productsJson.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to load products: $e');
     }
@@ -17,17 +17,14 @@ class ProductService {
 
   Future<List<Product>> searchProducts(String query) async {
     try {
-      final snapshot = await _firestore.collection('products').get();
-      final results = snapshot.docs
-          .where((doc) {
-            final name = doc['name'].toString().toLowerCase();
-            final category = doc['category'].toString().toLowerCase();
-            return name.contains(query.toLowerCase()) ||
-                category.contains(query.toLowerCase());
-          })
-          .map((doc) => Product.fromFirebase(doc.data(), doc.id))
-          .toList();
-      return results;
+      final products = await getAllProducts();
+      final lowerQuery = query.toLowerCase();
+
+      return products.where((product) {
+        return product.name.toLowerCase().contains(lowerQuery) ||
+            product.category.toLowerCase().contains(lowerQuery) ||
+            product.description.toLowerCase().contains(lowerQuery);
+      }).toList();
     } catch (e) {
       throw Exception('Search failed: $e');
     }
@@ -35,9 +32,11 @@ class ProductService {
 
   Future<Product> getProductById(String id) async {
     try {
-      final doc = await _firestore.collection('products').doc(id).get();
-      if (!doc.exists) throw Exception('Product not found');
-      return Product.fromFirebase(doc.data() ?? {}, doc.id);
+      final products = await getAllProducts();
+      return products.firstWhere(
+            (product) => product.id == id,
+        orElse: () => throw Exception('Product not found'),
+      );
     } catch (e) {
       throw Exception('Failed to load product: $e');
     }
@@ -45,13 +44,8 @@ class ProductService {
 
   Future<List<Product>> getProductsByCategory(String category) async {
     try {
-      final snapshot = await _firestore
-          .collection('products')
-          .where('category', isEqualTo: category)
-          .get();
-      return snapshot.docs
-          .map((doc) => Product.fromFirebase(doc.data(), doc.id))
-          .toList();
+      final products = await getAllProducts();
+      return products.where((product) => product.category == category).toList();
     } catch (e) {
       throw Exception('Failed to load products: $e');
     }
