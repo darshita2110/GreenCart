@@ -2,18 +2,32 @@
 
 A fresh produce shopping app built with Flutter, Firebase Authentication, and Riverpod state management.
 
+## Screenshots
+
+| Splash | Onboarding | Login | Signup |
+|:------:|:----------:|:-----:|:------:|
+| <img src="screenshots/splash.jpeg" width="180"/> | <img src="screenshots/reset.jpeg" width="180"/> | <img src="screenshots/login.jpeg" width="180"/> | <img src="screenshots/signup.jpeg" width="180"/> |
+
+| Home | Search | Product Detail | Cart |
+|:----:|:------:|:--------------:|:----:|
+| <img src="screenshots/home.jpeg" width="180"/> | <img src="screenshots/search.jpeg" width="180"/> | <img src="screenshots/product_detail.jpeg" width="180"/> | <img src="screenshots/cart.jpeg" width="180"/> |
+
+| Profile | Categories | Checkout |
+|:-------:|:----------:|:--------:|
+| <img src="screenshots/profile.jpeg" width="180"/> | <img src="screenshots/categories.jpeg" width="180"/> | <img src="screenshots/checkout.jpeg" width="180"/> |
+
 ## Features
 
 - **Splash Screen** – Animated splash with auto-login detection
-- **Onboarding** – 3-page onboarding flow for first-time users
-- **Authentication** – Login, Sign-up, and Forgot Password using Firebase Auth
+- **Onboarding** – 3-page swipeable onboarding for first-time users
+- **Authentication** – Login, Sign-up, and Forgot Password via Firebase Auth
 - **Home Page** – Browse fruits, vegetables, leafy greens, roots, and exotic produce
 - **Search** – Real-time search across all products
-- **Category Filter** – Filter products by category with horizontal chip selector
-- **Product Details** – Full product view with image, rating, description, and quantity picker
+- **Category Filter** – Filter products by category
+- **Product Details** – Full product view with image, rating, description, quantity picker
 - **Shopping Cart** – Add/remove items, update quantities, checkout flow
-- **Profile** – User profile with settings menu and logout
-- **Bottom Navigation** – Home, Cart (with badge), and Profile tabs
+- **Profile** – User profile with settings and logout
+- **Bottom Navigation** – Home, Cart (with badge count), and Profile tabs
 
 ## Tech Stack
 
@@ -31,84 +45,74 @@ A fresh produce shopping app built with Flutter, Firebase Authentication, and Ri
 
 ```
 lib/
-├── main.dart                     # app entry point, firebase init
-├── app.dart                      # MaterialApp setup with theme
-├── firebase_options.dart         # firebase config
+├── main.dart
+├── app.dart
+├── firebase_options.dart
 │
 ├── config/
-│   ├── constants/                # app-wide constants
-│   ├── routes/                   # route definitions
-│   └── theme/                    # colors, text styles, theme data
+│   ├── constants/
+│   ├── routes/
+│   └── theme/
 │
 ├── models/
-│   ├── product.dart              # product model with fromJson
-│   ├── user.dart                 # user model for auth
-│   ├── cart_item.dart            # cart item model
-│   └── validators.dart           # form validation logic
+│   ├── product.dart
+│   ├── user.dart
+│   ├── cart_item.dart
+│   └── validators.dart
 │
 ├── providers/
-│   ├── auth_provider.dart        # auth state (login, signup, forgot password)
-│   ├── product_provider.dart     # product loading, search, filter
-│   └── cart_provider.dart        # cart state management
+│   ├── auth_provider.dart
+│   ├── product_provider.dart
+│   └── cart_provider.dart
 │
 ├── services/
-│   ├── auth_service.dart         # firebase auth operations
-│   └── product_service.dart      # load products from json
+│   ├── auth_service.dart
+│   └── product_service.dart
 │
 ├── screens/
-│   ├── splash_screen.dart        # animated splash with auth check
-│   ├── onboarding_screen.dart    # 3-page onboarding
-│   ├── login_screen.dart         # email/password login
-│   ├── signup_screen.dart        # create account
+│   ├── splash_screen.dart
+│   ├── onboarding_screen.dart
+│   ├── login_screen.dart
+│   ├── signup_screen.dart
 │   ├── forgot_password_screen.dart
-│   ├── main_navigation_screen.dart  # bottom nav shell
-│   ├── home_screen.dart          # product browse + search
+│   ├── main_navigation_screen.dart
+│   ├── home_screen.dart
 │   ├── product_detail_screen.dart
-│   ├── cart_screen.dart          # shopping cart
-│   └── profile_screen.dart       # user profile
+│   ├── cart_screen.dart
+│   └── profile_screen.dart
 │
 └── widgets/
-    ├── custom_button.dart        # reusable button component
-    ├── custom_text_field.dart    # reusable text field
-    ├── product_card.dart         # product grid card
-    ├── product_grid.dart         # responsive product grid
-    └── product_search_bar.dart   # search input
+    ├── custom_button.dart
+    ├── custom_text_field.dart
+    ├── product_card.dart
+    ├── product_grid.dart
+    └── product_search_bar.dart
 ```
 
 ## State Management (Riverpod)
 
-All state is managed through Riverpod providers:
-
-- `authStateProvider` – StreamProvider listening to Firebase auth changes
-- `loginProvider` / `signupProvider` – StateNotifier for auth forms
-- `allProductsProvider` – FutureProvider loading products from JSON
-- `searchQueryProvider` / `selectedCategoryProvider` – StateProviders for filtering
-- `cartProvider` – StateNotifier for cart operations
-- `cartItemCountProvider` / `cartTotalProvider` – derived providers
+| Provider | Type | Purpose |
+|----------|------|---------|
+| `authStateProvider` | StreamProvider | Firebase auth state |
+| `loginProvider` | StateNotifier | Login form + async state |
+| `signupProvider` | StateNotifier | Signup form + async state |
+| `allProductsProvider` | FutureProvider | Load products from JSON |
+| `productsByCategoryProvider` | Provider | Category filtering |
+| `searchResultsProvider` | Provider | Search filtering |
+| `cartProvider` | StateNotifier | Cart CRUD operations |
+| `cartItemCountProvider` | Provider | Derived item count |
+| `cartTotalProvider` | Provider | Derived total price |
 
 ## Responsive Design
 
-- Product grid adapts to screen width (2/3/4 columns)
+- Product grid adapts columns (2 → 3 → 4) based on screen width
 - Product detail image scales with screen height
-- All layouts use flexible sizing with MediaQuery
-- Buttons and inputs use full-width on mobile
+- All layouts use `MediaQuery` for responsive sizing
 
 ## Setup
 
 1. Clone the repo
 2. Run `flutter pub get`
-3. Set up a Firebase project and update `lib/firebase_options.dart`
+3. Set up Firebase project and update `firebase_options.dart`
 4. Enable Email/Password auth in Firebase Console
-5. Run with `flutter run`
-
-## Screenshots
-
-The app includes:
-- Green-themed UI with Poppins font
-- Animated splash screen
-- Swipeable onboarding pages with dot indicators
-- Form validation on login/signup
-- Product cards with real produce images
-- Category filter chips
-- Cart with quantity controls and checkout
-- Profile page with avatar and settings menu
+5. Run `flutter run`

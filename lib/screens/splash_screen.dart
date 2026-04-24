@@ -15,7 +15,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
   bool _hasNavigated = false;
 
   @override
@@ -27,7 +27,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   void _setupAnimations() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
@@ -35,23 +35,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
     _animationController.forward();
   }
 
   void _waitThenNavigate() {
-    // show splash for 2 seconds then check if user is already logged in
-    Future.delayed(const Duration(seconds: 2), () {
+    // always show splash for at least 3 seconds so the user sees it properly
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted || _hasNavigated) return;
       _checkAuthState();
     });
 
-    // safety net in case auth takes too long
-    Future.delayed(const Duration(seconds: 5), () {
+    // safety net if auth hangs
+    Future.delayed(const Duration(seconds: 6), () {
       if (!mounted || _hasNavigated) return;
       _goTo('/login');
     });
@@ -64,7 +63,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         _goTo(user != null ? '/home' : '/login');
       },
       loading: () {
-        // still loading, wait for it
         ref.listenManual(authStateProvider, (prev, next) {
           next.when(
             data: (user) => _goTo(user != null ? '/home' : '/login'),
@@ -92,43 +90,66 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryGreen,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(30),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF22C55E),
+              Color(0xFF16A34A),
+            ],
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.shopping_basket,
+                      size: 48,
+                      color: Color(0xFF22C55E),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.shopping_basket,
-                    size: 60,
-                    color: AppColors.primaryGreen,
+                  const SizedBox(height: 20),
+                  Text(
+                    'GreenCart',
+                    style: AppTextStyles.headingLarge.copyWith(
+                      color: AppColors.white,
+                      fontSize: 28,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'GreenCart',
-                  style: AppTextStyles.headingLarge.copyWith(
-                    color: AppColors.white,
+                  const SizedBox(height: 6),
+                  Text(
+                    'Fresh Produce, Delivered Fresh',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.white70,
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Fresh Produce, Delivered Fresh',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.primaryGreenLight,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

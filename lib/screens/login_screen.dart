@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart'; // ✅ FIXED: Added missing import for TapGestureRecognizer
+import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:green_cart/config/theme/app_colors.dart';
 import 'package:green_cart/config/theme/app_text_styles.dart';
@@ -20,7 +20,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late TextEditingController _passwordController;
   late GlobalKey<FormState> _formKey;
 
-  // ✅ FIXED: Declare recognizer as field so it can be disposed properly
   late TapGestureRecognizer _signUpRecognizer;
 
   @override
@@ -39,7 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _signUpRecognizer.dispose(); // ✅ FIXED: Properly dispose recognizer
+    _signUpRecognizer.dispose();
     super.dispose();
   }
 
@@ -168,7 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               color: AppColors.primaryGreen,
                               fontWeight: FontWeight.w600,
                             ),
-                            recognizer: _signUpRecognizer, // ✅ FIXED: Use field recognizer
+                            recognizer: _signUpRecognizer,
                           ),
                         ],
                       ),
@@ -183,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  // ✅ NEW: Parse Firebase auth errors into user-friendly messages
+
   String _parseAuthError(String error) {
     if (error.contains('user-not-found')) {
       return 'No account found with this email.';

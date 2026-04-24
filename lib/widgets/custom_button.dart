@@ -66,7 +66,6 @@ class CustomButton extends StatelessWidget {
           )
               : Text(
             label,
-            // ✅ FIXED: Secondary button uses primaryGreen text, not white
             style: AppTextStyles.buttonText.copyWith(
               color: AppColors.primaryGreen,
             ),

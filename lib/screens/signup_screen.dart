@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart'; // ✅ FIXED: Added missing import
+import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:green_cart/config/theme/app_colors.dart';
 import 'package:green_cart/config/theme/app_text_styles.dart';
@@ -23,7 +23,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   late GlobalKey<FormState> _formKey;
   bool _agreedToTerms = false;
 
-  // ✅ FIXED: Declare recognizer as field so it can be properly disposed
   late TapGestureRecognizer _loginRecognizer;
 
   @override
@@ -35,7 +34,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     _confirmPasswordController = TextEditingController();
     _formKey = GlobalKey<FormState>();
 
-    // ✅ FIXED: Listen to password changes to update strength indicator
     _passwordController.addListener(() => setState(() {}));
 
     _loginRecognizer = TapGestureRecognizer()
@@ -50,7 +48,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _loginRecognizer.dispose(); // ✅ FIXED: Properly dispose recognizer
+    _loginRecognizer.dispose();
     super.dispose();
   }
 
@@ -223,7 +221,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               color: AppColors.primaryGreen,
                               fontWeight: FontWeight.w600,
                             ),
-                            recognizer: _loginRecognizer, // ✅ FIXED: Use field recognizer
+                            recognizer: _loginRecognizer,
                           ),
                         ],
                       ),
@@ -278,7 +276,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 
-  // ✅ NEW: Parse Firebase errors into human-readable messages
+
   String _parseAuthError(String error) {
     if (error.contains('email-already-in-use')) {
       return 'An account with this email already exists.';

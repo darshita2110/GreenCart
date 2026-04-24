@@ -47,37 +47,31 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 42,
       decoration: BoxDecoration(
         color: AppColors.lightGrey,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.borderColor),
       ),
       child: TextField(
         controller: _controller,
-        style: AppTextStyles.bodyMedium,
+        style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textPrimary, fontSize: 13),
         decoration: InputDecoration(
           hintText: 'Search fruits, vegetables...',
-          hintStyle: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.mediumGrey,
+          hintStyle: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.mediumGrey, fontSize: 13,
           ),
-          prefixIcon: const Icon(
-            Icons.search,
-            color: AppColors.mediumGrey,
-          ),
+          prefixIcon: const Icon(Icons.search, color: AppColors.mediumGrey, size: 20),
           suffixIcon: _isSearching
               ? GestureDetector(
                   onTap: _clearSearch,
-                  child: const Icon(
-                    Icons.close,
-                    color: AppColors.mediumGrey,
-                  ),
+                  child: const Icon(Icons.close, color: AppColors.mediumGrey, size: 18),
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          isDense: true,
         ),
       ),
     );

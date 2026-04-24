@@ -46,7 +46,6 @@ class _ForgotPasswordScreenState
   Widget build(BuildContext context) {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
 
-    // ✅ FIXED: Use whenOrNull instead of non-existent whenData/whenError
     ref.listen(forgotPasswordProvider, (previous, next) {
       next.whenOrNull(
         data: (_) {

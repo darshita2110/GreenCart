@@ -22,12 +22,12 @@ class ProductCard extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.borderColor),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.05),
-              blurRadius: 8,
+              color: AppColors.black.withOpacity(0.04),
+              blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
@@ -35,175 +35,150 @@ class ProductCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-              child: Container(
-                width: double.infinity,
-                height: 140,
-                color: AppColors.lightGrey,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    product.imageUrl.isNotEmpty
-                        ? Image.network(
-                            product.imageUrl,
-                            width: double.infinity,
-                            height: 140,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.primaryGreen,
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
-                                child: Icon(
-                                  Icons.eco,
-                                  size: 40,
-                                  color: AppColors.primaryGreen,
-                                ),
-                              );
-                            },
-                          )
-                        : const Center(
-                            child: Icon(
-                              Icons.eco,
-                              size: 40,
-                              color: AppColors.primaryGreen,
+            // image
+            Expanded(
+              flex: 5,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  color: AppColors.lightGrey,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      product.imageUrl.isNotEmpty
+                          ? Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.primaryGreen,
+                                    value: progress.expectedTotalBytes != null
+                                        ? progress.cumulativeBytesLoaded /
+                                            progress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (_, __, ___) => const Center(
+                                child: Icon(Icons.eco, size: 36,
+                                    color: AppColors.primaryGreen),
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(Icons.eco, size: 36,
+                                  color: AppColors.primaryGreen),
                             ),
-                          ),
-                    if (product.isOrganic)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.successGreen,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Organic',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w600,
+                      if (product.isOrganic)
+                        Positioned(
+                          top: 6,
+                          right: 6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.successGreen,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Organic',
+                              style: AppTextStyles.captionText.copyWith(
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 9,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.labelLarge,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    product.category,
-                    style: AppTextStyles.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 14,
-                            color: Color(0xFFFCD34D),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${product.rating}',
-                            style: AppTextStyles.bodySmall,
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '\$${product.price.toStringAsFixed(2)}',
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: AppColors.primaryGreen,
-                          fontWeight: FontWeight.w700,
+            // details
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.labelLarge.copyWith(fontSize: 13),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (product.stock > 0)
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(Icons.star, size: 12,
+                                color: const Color(0xFFFCD34D)),
+                            const SizedBox(width: 2),
+                            Text('${product.rating}',
+                                style: AppTextStyles.captionText),
+                            const SizedBox(width: 6),
+                            Text(product.category,
+                                style: AppTextStyles.captionText),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
                         Text(
-                          'In Stock',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.successGreen,
-                          ),
-                        )
-                      else
-                        Text(
-                          'Out of Stock',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.errorRed,
+                          '\$${product.price.toStringAsFixed(2)}',
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: AppColors.primaryGreen,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
                           ),
                         ),
-                      if (product.stock > 0)
-                        GestureDetector(
-                          onTap: () {
-                            ref.read(cartProvider.notifier).addToCart(product);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${product.name} added to cart'),
-                                backgroundColor: AppColors.successGreen,
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(seconds: 1),
-                                margin: const EdgeInsets.all(16),
+                        if (product.stock > 0)
+                          GestureDetector(
+                            onTap: () {
+                              ref.read(cartProvider.notifier).addToCart(product);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${product.name} added'),
+                                  backgroundColor: AppColors.successGreen,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 1),
+                                  margin: const EdgeInsets.all(12),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGreen,
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                            );
-                          },
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryGreen,
-                              borderRadius: BorderRadius.circular(8),
+                              child: const Icon(Icons.add,
+                                  color: AppColors.white, size: 16),
                             ),
-                            child: const Icon(
-                              Icons.add,
-                              color: AppColors.white,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                          )
+                        else
+                          Text('Out of Stock',
+                              style: AppTextStyles.captionText
+                                  .copyWith(color: AppColors.errorRed)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
