@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:green_cart/models/user.dart';
 
 class AuthService {
   final _auth = fb.FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
 
   Future<User> signup({
     required String email,
@@ -20,22 +18,12 @@ class AuthService {
       final user = userCred.user!;
       await user.updateDisplayName(displayName);
 
-      final newUser = User(
+      return User(
         id: user.uid,
         email: email,
         displayName: displayName,
         createdAt: DateTime.now(),
       );
-
-      // save profile to firestore if available
-      try {
-        await _firestore
-            .collection('users')
-            .doc(user.uid)
-            .set(newUser.toFirebase());
-      } catch (_) {}
-
-      return newUser;
     } on fb.FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Sign up failed');
     } catch (e) {
@@ -54,14 +42,6 @@ class AuthService {
       );
 
       final user = userCred.user!;
-
-      try {
-        final userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        if (userDoc.exists && userDoc.data() != null) {
-          return User.fromFirebase(userDoc.data()!, user.uid);
-        }
-      } catch (_) {}
 
       return User(
         id: user.uid,
@@ -87,14 +67,6 @@ class AuthService {
   Future<User?> getCurrentUser() async {
     final user = _auth.currentUser;
     if (user == null) return null;
-
-    try {
-      final userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
-      if (userDoc.exists && userDoc.data() != null) {
-        return User.fromFirebase(userDoc.data()!, user.uid);
-      }
-    } catch (_) {}
 
     return User(
       id: user.uid,
