@@ -12,8 +12,6 @@ final currentUserProvider = FutureProvider<User?>((ref) {
   return ref.watch(authServiceProvider).getCurrentUser();
 });
 
-// ─── Login ────────────────────────────────────────────────────────────────────
-
 class LoginNotifier extends StateNotifier<AsyncValue<User?>> {
   final AuthService _authService;
 
@@ -25,7 +23,7 @@ class LoginNotifier extends StateNotifier<AsyncValue<User?>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-          () => _authService.login(email: email, password: password),
+      () => _authService.login(email: email, password: password),
     );
   }
 
@@ -33,11 +31,9 @@ class LoginNotifier extends StateNotifier<AsyncValue<User?>> {
 }
 
 final loginProvider =
-StateNotifierProvider.autoDispose<LoginNotifier, AsyncValue<User?>>(
-      (ref) => LoginNotifier(ref.watch(authServiceProvider)),
+    StateNotifierProvider.autoDispose<LoginNotifier, AsyncValue<User?>>(
+  (ref) => LoginNotifier(ref.watch(authServiceProvider)),
 );
-
-// ─── Signup ───────────────────────────────────────────────────────────────────
 
 class SignupNotifier extends StateNotifier<AsyncValue<User?>> {
   final AuthService _authService;
@@ -51,7 +47,7 @@ class SignupNotifier extends StateNotifier<AsyncValue<User?>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-          () => _authService.signup(
+      () => _authService.signup(
         email: email,
         password: password,
         displayName: displayName,
@@ -63,11 +59,9 @@ class SignupNotifier extends StateNotifier<AsyncValue<User?>> {
 }
 
 final signupProvider =
-StateNotifierProvider.autoDispose<SignupNotifier, AsyncValue<User?>>(
-      (ref) => SignupNotifier(ref.watch(authServiceProvider)),
+    StateNotifierProvider.autoDispose<SignupNotifier, AsyncValue<User?>>(
+  (ref) => SignupNotifier(ref.watch(authServiceProvider)),
 );
-
-// ─── Forgot Password ──────────────────────────────────────────────────────────
 
 class ForgotPasswordNotifier extends StateNotifier<AsyncValue<void>> {
   final AuthService _authService;
@@ -78,7 +72,7 @@ class ForgotPasswordNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> sendResetEmail({required String email}) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-          () => _authService.forgotPassword(email: email),
+      () => _authService.forgotPassword(email: email),
     );
   }
 
@@ -87,12 +81,9 @@ class ForgotPasswordNotifier extends StateNotifier<AsyncValue<void>> {
 
 final forgotPasswordProvider = StateNotifierProvider.autoDispose<
     ForgotPasswordNotifier, AsyncValue<void>>(
-      (ref) => ForgotPasswordNotifier(ref.watch(authServiceProvider)),
+  (ref) => ForgotPasswordNotifier(ref.watch(authServiceProvider)),
 );
 
-// ─── Logout ───────────────────────────────────────────────────────────────────
-
-// ✅ FIXED: logoutProvider is a simple action, not a stream – use autoDispose correctly
 final logoutProvider = FutureProvider.autoDispose<void>((ref) async {
   return ref.watch(authServiceProvider).logout();
 });

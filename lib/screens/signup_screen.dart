@@ -62,7 +62,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
-    // Dismiss keyboard so loading state and errors are visible
+    // hide keyboard first
     FocusScope.of(context).unfocus();
 
     ref.read(signupProvider.notifier).signup(

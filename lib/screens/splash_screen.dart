@@ -16,15 +16,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _hasNavigated = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-    _navigateAfterSplash();
+    _setupAnimations();
+    _waitThenNavigate();
   }
 
-  void _initializeAnimations() {
+  void _setupAnimations() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -34,28 +35,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
 
     _animationController.forward();
   }
 
-  bool _hasNavigated = false;
-
-  void _navigateAfterSplash() {
-    // Primary: wait 3s then check auth state
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_hasNavigated) {
-        _checkAuthState();
-      }
+  void _waitThenNavigate() {
+    // show splash for 2 seconds then check if user is already logged in
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted || _hasNavigated) return;
+      _checkAuthState();
     });
 
-    // Fallback: if auth never resolves (no internet, Firebase timeout),
-    // navigate to onboarding after 6 seconds total
-    Future.delayed(const Duration(seconds: 6), () {
-      if (mounted && !_hasNavigated) {
-        _navigateTo('/onboarding');
-      }
+    // safety net in case auth takes too long
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!mounted || _hasNavigated) return;
+      _goTo('/login');
     });
   }
 
@@ -63,33 +61,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final authState = ref.read(authStateProvider);
     authState.when(
       data: (user) {
-        if (user != null) {
-          _navigateTo('/home');
-        } else {
-          _navigateTo('/onboarding');
-        }
+        _goTo(user != null ? '/home' : '/login');
       },
       loading: () {
-        // Auth still loading — listen for changes
-        ref.listenManual(authStateProvider, (previous, next) {
+        // still loading, wait for it
+        ref.listenManual(authStateProvider, (prev, next) {
           next.when(
-            data: (user) {
-              if (user != null) {
-                _navigateTo('/home');
-              } else {
-                _navigateTo('/onboarding');
-              }
-            },
+            data: (user) => _goTo(user != null ? '/home' : '/login'),
             loading: () {},
-            error: (_, __) => _navigateTo('/onboarding'),
+            error: (_, __) => _goTo('/login'),
           );
         });
       },
-      error: (_, __) => _navigateTo('/onboarding'),
+      error: (_, __) => _goTo('/login'),
     );
   }
 
-  void _navigateTo(String route) {
+  void _goTo(String route) {
     if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
     Navigator.of(context).pushReplacementNamed(route);

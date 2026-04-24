@@ -13,23 +13,17 @@ class AppRouter {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
-
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
-
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginScreen());
-
       case '/signup':
         return MaterialPageRoute(builder: (_) => const SignupScreen());
-
       case '/forgot-password':
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
-
       case '/home':
         return MaterialPageRoute(
             builder: (_) => const MainNavigationScreen());
-
       case '/product-detail':
         final productId = settings.arguments as String?;
         if (productId == null) {
@@ -42,10 +36,8 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => ProductDetailScreen(productId: productId),
         );
-
       case '/cart':
         return MaterialPageRoute(builder: (_) => const CartScreen());
-
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

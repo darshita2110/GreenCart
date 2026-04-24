@@ -16,9 +16,9 @@ class MainNavigationScreen extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
-  int _selectedIndex = 0;
+  int _currentTab = 0;
 
-  final List<Widget> _screens = const [
+  final _screens = const [
     HomeScreen(),
     CartScreen(),
     ProfileScreen(),
@@ -26,11 +26,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cartItemCount = ref.watch(cartItemCountProvider);
+    final cartCount = ref.watch(cartItemCountProvider);
 
     return Scaffold(
       body: IndexedStack(
-        index: _selectedIndex,
+        index: _currentTab,
         children: _screens,
       ),
       bottomNavigationBar: Container(
@@ -50,25 +50,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
-                  label: 'Home',
-                  index: 0,
-                ),
-                _buildNavItem(
-                  icon: Icons.shopping_cart_outlined,
-                  activeIcon: Icons.shopping_cart,
-                  label: 'Cart',
-                  index: 1,
-                  badgeCount: cartItemCount,
-                ),
-                _buildNavItem(
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
-                  label: 'Profile',
-                  index: 2,
-                ),
+                _navItem(Icons.home_outlined, Icons.home, 'Home', 0),
+                _navItem(Icons.shopping_cart_outlined, Icons.shopping_cart,
+                    'Cart', 1,
+                    badge: cartCount),
+                _navItem(Icons.person_outline, Icons.person, 'Profile', 2),
               ],
             ),
           ),
@@ -77,23 +63,18 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     );
   }
 
-  Widget _buildNavItem({
-    required IconData icon,
-    required IconData activeIcon,
-    required String label,
-    required int index,
-    int badgeCount = 0,
-  }) {
-    final isSelected = _selectedIndex == index;
+  Widget _navItem(IconData icon, IconData activeIcon, String label, int index,
+      {int badge = 0}) {
+    final selected = _currentTab == index;
 
     return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
+      onTap: () => setState(() => _currentTab = index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
+          color: selected
               ? AppColors.primaryGreen.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -105,12 +86,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               clipBehavior: Clip.none,
               children: [
                 Icon(
-                  isSelected ? activeIcon : icon,
-                  color:
-                      isSelected ? AppColors.primaryGreen : AppColors.mediumGrey,
+                  selected ? activeIcon : icon,
+                  color: selected ? AppColors.primaryGreen : AppColors.mediumGrey,
                   size: 26,
                 ),
-                if (badgeCount > 0)
+                if (badge > 0)
                   Positioned(
                     right: -8,
                     top: -4,
@@ -123,7 +103,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                       constraints:
                           const BoxConstraints(minWidth: 18, minHeight: 18),
                       child: Text(
-                        '$badgeCount',
+                        '$badge',
                         style: AppTextStyles.captionText.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.w700,
@@ -138,13 +118,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: (isSelected
-                      ? AppTextStyles.captionText
-                          .copyWith(fontWeight: FontWeight.w600)
-                      : AppTextStyles.captionText)
-                  .copyWith(
-                color:
-                    isSelected ? AppColors.primaryGreen : AppColors.mediumGrey,
+              style: AppTextStyles.captionText.copyWith(
+                color: selected ? AppColors.primaryGreen : AppColors.mediumGrey,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],

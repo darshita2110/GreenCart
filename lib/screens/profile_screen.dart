@@ -20,84 +20,44 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: 16),
-
-              // Profile Avatar
               currentUserAsync.when(
-                data: (user) => _buildProfileHeader(user?.displayName ?? 'User',
-                    user?.email ?? ''),
-                loading: () => _buildProfileHeader('Loading...', ''),
-                error: (_, __) => _buildProfileHeader('User', ''),
+                data: (user) => _profileHeader(
+                    user?.displayName ?? 'User', user?.email ?? ''),
+                loading: () => _profileHeader('Loading...', ''),
+                error: (_, __) => _profileHeader('User', ''),
               ),
-
               const SizedBox(height: 32),
-
-              // Menu Items
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.person_outline,
                 title: 'Edit Profile',
                 subtitle: 'Update your personal information',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
-                },
+                onTap: () => _comingSoon(context),
               ),
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.shopping_bag_outlined,
                 title: 'My Orders',
                 subtitle: 'View your order history',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
-                },
+                onTap: () => _comingSoon(context),
               ),
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.location_on_outlined,
                 title: 'Delivery Address',
                 subtitle: 'Manage your delivery addresses',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
-                },
+                onTap: () => _comingSoon(context),
               ),
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.notifications_outlined,
                 title: 'Notifications',
                 subtitle: 'Manage notification preferences',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
-                },
+                onTap: () => _comingSoon(context),
               ),
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.help_outline,
                 title: 'Help & Support',
                 subtitle: 'Get help with your orders',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
-                },
+                onTap: () => _comingSoon(context),
               ),
-              _buildMenuItem(
+              _menuItem(
                 icon: Icons.info_outline,
                 title: 'About GreenCart',
                 subtitle: 'Version 1.0.0',
@@ -110,23 +70,19 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       const SizedBox(height: 16),
                       Text(
-                        'A fresh produce shopping app built with Flutter, Firebase Auth, and Riverpod.',
+                        'Fresh produce shopping app built with Flutter, Firebase, and Riverpod.',
                         style: AppTextStyles.bodyMedium,
                       ),
                     ],
                   );
                 },
               ),
-
               const SizedBox(height: 24),
-
-              // Logout Button
               CustomButton(
                 label: 'Logout',
                 variant: ButtonVariant.secondary,
                 onPressed: () => _handleLogout(context, ref),
               ),
-
               const SizedBox(height: 16),
             ],
           ),
@@ -135,7 +91,16 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileHeader(String name, String email) {
+  void _comingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Coming soon!'),
+        backgroundColor: AppColors.primaryGreen,
+      ),
+    );
+  }
+
+  Widget _profileHeader(String name, String email) {
     return Column(
       children: [
         Container(
@@ -167,22 +132,16 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          name,
-          style: AppTextStyles.headingSmall,
-        ),
+        Text(name, style: AppTextStyles.headingSmall),
         if (email.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text(
-            email,
-            style: AppTextStyles.bodyMedium,
-          ),
+          Text(email, style: AppTextStyles.bodyMedium),
         ],
       ],
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _menuItem({
     required IconData icon,
     required String title,
     required String subtitle,
@@ -233,36 +192,27 @@ class ProfileScreen extends ConsumerWidget {
   void _handleLogout(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('Logout', style: AppTextStyles.headingSmall),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: AppTextStyles.bodyMedium,
-        ),
+        content: Text('Are you sure?', style: AppTextStyles.bodyMedium),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.primaryGreen),
-            ),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.primaryGreen)),
           ),
           TextButton(
             onPressed: () {
               ref.read(authServiceProvider).logout();
-              Navigator.pop(context); // close dialog
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
-                (route) => false,
-              );
+              Navigator.pop(ctx);
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/login', (route) => false);
             },
-            child: Text(
-              'Logout',
-              style:
-                  AppTextStyles.labelMedium.copyWith(color: AppColors.errorRed),
-            ),
+            child: Text('Logout',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.errorRed)),
           ),
         ],
       ),

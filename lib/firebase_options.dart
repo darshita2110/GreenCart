@@ -1,7 +1,3 @@
-// lib/firebase_options.dart
-// Generated from firebase_options.dart.example with real project values.
-// Project: green-cart-67686
-
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
@@ -33,9 +29,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // WEB
-  // ---------------------------------------------------------------------------
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
     appId: '1:1014414328263:web:abcd1234efgh5678ijkl',
@@ -45,9 +38,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'green-cart-67686.firebasestorage.app',
   );
 
-  // ---------------------------------------------------------------------------
-  // ANDROID
-  // ---------------------------------------------------------------------------
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
     appId: '1:1014414328263:android:6cc332b0c25dab855119e2',
@@ -56,9 +46,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'green-cart-67686.firebasestorage.app',
   );
 
-  // ---------------------------------------------------------------------------
-  // iOS
-  // ---------------------------------------------------------------------------
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
     appId: '1:1014414328263:ios:abcd1234efgh567',
@@ -68,9 +55,6 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.greencart',
   );
 
-  // ---------------------------------------------------------------------------
-  // macOS
-  // ---------------------------------------------------------------------------
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDkw8bopHXK5xlYadmpRsd-Acd95JBXkTM',
     appId: '1:1014414328263:macos:abcd1234efgh567',

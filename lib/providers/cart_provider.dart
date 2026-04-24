@@ -2,8 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:green_cart/models/cart_item.dart';
 import 'package:green_cart/models/product.dart';
 
-// ─── Cart State Notifier ──────────────────────────────────────────────────────
-
 class CartNotifier extends StateNotifier<List<CartItem>> {
   CartNotifier() : super([]);
 
@@ -12,7 +10,6 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         state.indexWhere((item) => item.product.id == product.id);
 
     if (existingIndex >= 0) {
-      // Product already in cart — increase quantity
       final existing = state[existingIndex];
       final updated = existing.copyWith(quantity: existing.quantity + quantity);
       state = [
@@ -21,7 +18,6 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         ...state.sublist(existingIndex + 1),
       ];
     } else {
-      // New product — add to cart
       state = [...state, CartItem(product: product, quantity: quantity)];
     }
   }
@@ -48,8 +44,6 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     state = [];
   }
 }
-
-// ─── Providers ────────────────────────────────────────────────────────────────
 
 final cartProvider =
     StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {

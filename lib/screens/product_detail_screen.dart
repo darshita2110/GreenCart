@@ -92,28 +92,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             // Product Image
             Container(
               width: double.infinity,
-              height: 300,
+              height: MediaQuery.of(context).size.height * 0.35,
               color: AppColors.lightGrey,
               child: product.imageUrl.isNotEmpty
                   ? Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 64,
-                            color: AppColors.mediumGrey,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primaryGreen,
+                            value: progress.expectedTotalBytes != null
+                                ? progress.cumulativeBytesLoaded /
+                                    progress.expectedTotalBytes!
+                                : null,
                           ),
                         );
                       },
+                      errorBuilder: (_, __, ___) => const Center(
+                        child: Icon(Icons.eco, size: 64, color: AppColors.primaryGreen),
+                      ),
                     )
                   : const Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 64,
-                        color: AppColors.mediumGrey,
-                      ),
+                      child: Icon(Icons.eco, size: 64, color: AppColors.primaryGreen),
                     ),
             ),
 

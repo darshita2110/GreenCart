@@ -12,12 +12,26 @@ class ProductGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // adapt columns to screen width
+    int crossAxisCount = 2;
+    double aspectRatio = 0.58;
+
+    if (screenWidth > 900) {
+      crossAxisCount = 4;
+      aspectRatio = 0.60;
+    } else if (screenWidth > 600) {
+      crossAxisCount = 3;
+      aspectRatio = 0.60;
+    }
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.58,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: aspectRatio,
           crossAxisSpacing: 12,
           mainAxisSpacing: 16,
         ),
