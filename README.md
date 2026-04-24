@@ -4,7 +4,7 @@ A fresh produce shopping app built with Flutter, Firebase Authentication, and Ri
 
 ## Screenshots
 
-| Splash | Onboarding | Login | Signup |
+| Splash | Reset | Login | Signup |
 |:------:|:----------:|:-----:|:------:|
 | <img src="screenshots/splash.jpeg" width="180"/> | <img src="screenshots/reset.jpeg" width="180"/> | <img src="screenshots/login.jpeg" width="180"/> | <img src="screenshots/signup.jpeg" width="180"/> |
 
